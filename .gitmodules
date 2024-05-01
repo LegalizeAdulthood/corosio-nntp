@@ -1,0 +1,6 @@
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg
+[submodule "corosio"]
+	path = corosio
+	url = git@github.com:cppalliance/corosio.git
