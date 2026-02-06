@@ -4,6 +4,7 @@
   "description": "Sample code for the Utah C++ Programmers video NNTP with corosio",
   "version-semver": "1.0.0",
   "dependencies": [
+    "boost-core",
     "gtest"
   ]
 }
