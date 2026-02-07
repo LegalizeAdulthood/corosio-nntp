@@ -4,9 +4,8 @@ add_subdirectory(capy)
 add_subdirectory(corosio)
 add_subdirectory(nntp)
 
-if(APPLE)
-    target_compile_options(boost_capy PUBLIC -fexperimental-library)
-endif()
+include(stop_token)
+stop_token(boost_capy)
 
 target_folder(boost_capy "Libraries/Boost")
 target_folder(boost_corosio "Libraries/Boost")
