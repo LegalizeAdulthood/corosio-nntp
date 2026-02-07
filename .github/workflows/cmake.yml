@@ -1,8 +1,5 @@
 name: CMake
 
-permissions:
-  packages: write
-
 on:
   push:
     branches: [ "master" ]
@@ -21,6 +18,10 @@ jobs:
             nuget: mono `./vcpkg/vcpkg fetch nuget | tail -n 1`
           - os: windows-latest
             nuget: nuget
+
+    permissions:
+      contents: read
+      packages: write
 
     runs-on: ${{matrix.os}}
     env: 
