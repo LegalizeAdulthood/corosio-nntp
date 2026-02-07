@@ -1,17 +1,20 @@
+include(stop_token)
 find_package(Boost REQUIRED COMPONENTS core)
 
+set(BOOST_CAPY_BUILD_TESTS OFF)
+set(BOOST_CAPY_BUILD_EXAMPLES OFF)
+set(BOOST_CAPY_MRDOCS_BUILD OFF)
 add_subdirectory(capy)
-add_subdirectory(corosio)
-add_subdirectory(nntp)
-
-include(stop_token)
 stop_token(boost_capy)
-
 target_folder(boost_capy "Libraries/Boost")
-target_folder(boost_corosio "Libraries/Boost")
 target_folder(boost_capy_bench "Tools/Boost")
-target_folder(boost_capy_test_suite "Tests/Boost")
-target_folder(boost_capy_test_suite_main "Tests/Boost")
-target_folder(boost_capy_tests "Tests/Boost")
-target_folder(boost_corosio_tests "Tests/Boost")
 
+set(BOOST_COROSIO_BUILD_TESTS OFF)
+set(BOOST_COROSIO_BUILD_BENCH OFF)
+set(BOOST_COROSIO_BUILD_EXAMPLES OFF)
+set(BOOST_COROSIO_BUILD_DOCS OFF)
+set(BOOST_COROSIO_MRDOCS_BUILD OFF)
+add_subdirectory(corosio)
+target_folder(boost_corosio "Libraries/Boost")
+
+add_subdirectory(nntp)
