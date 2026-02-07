@@ -5,7 +5,7 @@ add_subdirectory(corosio)
 add_subdirectory(nntp)
 
 if(APPLE)
-    target_compile_options(boost_corosio PRIVATE -fexperimental-library)
+    target_compile_options(boost_capy PUBLIC -fexperimental-library)
 endif()
 
 target_folder(boost_capy "Libraries/Boost")
