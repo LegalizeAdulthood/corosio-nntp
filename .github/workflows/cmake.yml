@@ -59,9 +59,9 @@ jobs:
           -StorePasswordInClearText \
           -Name GitHubPackages \
           -UserName "${{github.repository_owner}}" \
-          -Password "${{secrets.GITHUB_TOKEN}}"
+          -Password "${{github.token}}"
         ${{matrix.nuget}} \
-          setapikey "${{secrets.GITHUB_TOKEN}}" \
+          setapikey "${{github.token}}" \
           -Source "${{env.FEED_URL}}"
 
     - name: Setup CMake
