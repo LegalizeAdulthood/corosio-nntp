@@ -1,6 +1,8 @@
+#include <nntp/client.h>
+
 #include <gtest/gtest.h>
 
-TEST(TestProjectTemplate, basic)
+TEST(TestClient, basic)
 {
     ASSERT_TRUE(true);
 }
