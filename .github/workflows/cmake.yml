@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     strategy:
@@ -18,10 +22,6 @@ jobs:
             nuget: mono `./vcpkg/vcpkg fetch nuget | tail -n 1`
           - os: windows-latest
             nuget: nuget
-
-    permissions:
-      contents: read
-      packages: write
 
     runs-on: ${{matrix.os}}
     env: 
