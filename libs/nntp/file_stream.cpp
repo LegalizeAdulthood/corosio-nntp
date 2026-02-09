@@ -402,5 +402,3 @@ file_stream::cancel() noexcept
 } // namespace nntp
 
 #endif // __APPLE__
-
-#endif // __linux__
