@@ -5,7 +5,6 @@
 
 #include <boost/corosio/detail/config.hpp>
 #include "src/detail/scheduler_op.hpp"
-#include "src/detail/io_awaitable_op.hpp"
 
 #include <liburing.h>
 #include <sys/types.h>
