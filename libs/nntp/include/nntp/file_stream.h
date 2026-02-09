@@ -3,6 +3,7 @@
 
 #include <boost/corosio/io_stream.hpp>
 #include <boost/capy/ex/execution_context.hpp>
+#include <boost/corosio/detail/platform.hpp>
 #include <filesystem>
 #include <system_error>
 #include <cstdint>
@@ -10,8 +11,16 @@
 namespace nntp {
 
 namespace detail {
+#if BOOST_COROSIO_HAS_IOCP
     class win_file_service;
     class win_file_impl;
+#elif defined(__linux__)
+    class uring_file_service;
+    class uring_file_impl;
+#elif defined(__APPLE__)
+    class gcd_file_service;
+    class gcd_file_impl;
+#endif
 }
 
 /** Asynchronous file stream for Windows.
@@ -129,8 +138,16 @@ public:
     void cancel() noexcept;
 
 private:
+#if BOOST_COROSIO_HAS_IOCP
     detail::win_file_service* svc_ = nullptr;
     detail::win_file_impl* impl_ = nullptr;
+#elif defined(__linux__)
+    detail::uring_file_service* svc_ = nullptr;
+    detail::uring_file_impl* impl_ = nullptr;
+#elif defined(__APPLE__)
+    detail::gcd_file_service* svc_ = nullptr;
+    detail::gcd_file_impl* impl_ = nullptr;
+#endif
 };
 
 } // namespace nntp

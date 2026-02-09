@@ -158,10 +158,11 @@ class gcd_file_impl
     friend class gcd_file_service;
 
 public:
-    explicit gcd_file_impl(std::shared_ptr<gcd_file_impl_internal> internal)
-        : internal_(std::move(internal))
-    {
-    }
+explicit gcd_file_impl(std::shared_ptr<gcd_file_impl_internal> internal)
+    : io_stream(internal->svc_.context())
+    , internal_(std::move(internal))
+{
+}
 
     void release() override;
 
