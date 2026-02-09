@@ -3,6 +3,8 @@
 
 #ifdef __linux__
 
+#include <utility>
+
 #include <boost/corosio/detail/config.hpp>
 #include "src/detail/scheduler_op.hpp"
 
@@ -12,7 +14,6 @@
 #include <cstdint>
 #include <memory>
 #include <system_error>
-#include <utility>
 
 namespace boost::corosio::detail
 {
