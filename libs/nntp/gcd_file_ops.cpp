@@ -85,21 +85,21 @@ file_read_op::do_complete(
     // Process result
     if (result >= 0)
     {
-        // Success: res is bytes transferred
+        // Success: result is bytes transferred
         if (op->bytes_out)
-            *op->bytes_out = static_cast<std::size_t>(res);
+            *op->bytes_out = static_cast<std::size_t>(result);
 
         // Update file position after successful read
-        if (res > 0)
+        if (result > 0)
         {
-            op->internal.position_ += res;
+            op->internal.position_ += result;
         }
 
         // Check for EOF
-        if (res == 0)
+        if (result == 0)
         {
             if (op->ec_out)
-                *op->ec_out = boost::capy::cond::eof;
+                *op->ec_out = make_error_condition(boost::capy::cond::eof);
         }
         else
         {
@@ -109,20 +109,20 @@ file_read_op::do_complete(
     }
     else
     {
-        // Error: res is -errno
+        // Error: result is -errno
         if (op->bytes_out)
             *op->bytes_out = 0;
 
         if (op->ec_out)
         {
             // Check for cancellation
-            if (-res == ECANCELED)
+            if (-result == ECANCELED)
             {
-                *op->ec_out = boost::capy::cond::canceled;
+                *op->ec_out = make_error_condition(boost::capy::cond::canceled);
             }
             else
             {
-                *op->ec_out = boost::corosio::detail::make_err(-res);
+                *op->ec_out = boost::corosio::detail::make_err(-result);
             }
         }
     }
@@ -187,7 +187,7 @@ file_write_op::do_complete(
             // Check for cancellation
             if (-result == ECANCELED)
             {
-                *op->ec_out = boost::capy::cond::canceled;
+                *op->ec_out = make_error_condition(boost::capy::cond::canceled);
             }
             else
             {

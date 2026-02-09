@@ -121,7 +121,7 @@ std::uint32_t /*flags*/)
         if (result == 0)
         {
             if (op->ec_out)
-                *op->ec_out = boost::capy::cond::eof;
+                *op->ec_out = make_error_condition(boost::capy::cond::eof);
         }
         else
         {
@@ -140,7 +140,7 @@ std::uint32_t /*flags*/)
             // Check for cancellation
             if (-result == ECANCELED)
             {
-                *op->ec_out = boost::capy::cond::canceled;
+                *op->ec_out = make_error_condition(boost::capy::cond::canceled);
             }
             else
             {
@@ -209,7 +209,7 @@ std::uint32_t /*flags*/)
             // Check for cancellation
             if (-result == ECANCELED)
             {
-                *op->ec_out = boost::capy::cond::canceled;
+                *op->ec_out = make_error_condition(boost::capy::cond::canceled);
             }
             else
             {
