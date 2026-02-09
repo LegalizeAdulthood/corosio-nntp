@@ -97,6 +97,12 @@ public:
     */
     dispatch_queue_t io_queue() noexcept { return io_queue_; }
 
+    /** Get the execution context.
+
+        @return Reference to the execution context.
+    */
+    boost::capy::execution_context& context() noexcept { return sched_.context(); }
+
     /** Notify service that work has started. */
     void work_started() noexcept;
 

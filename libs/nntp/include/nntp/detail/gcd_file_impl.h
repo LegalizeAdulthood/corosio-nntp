@@ -99,15 +99,15 @@ public:
     /** Cancel pending I/O operations. */
     void cancel() noexcept;
 
-private:
-    /** Set the file descriptor. */
-    void set_fd(int fd) noexcept { fd_ = fd; }
-
     /** Close the file. */
     void close_file() noexcept;
 
-    /** Create dispatch_io channel for the file. */
-    void open_channel();
+private:
+/** Set the file descriptor. */
+void set_fd(int fd) noexcept { fd_ = fd; }
+
+/** Create dispatch_io channel for the file. */
+void open_channel();
 
     /** Close dispatch_io channel. */
     void close_channel() noexcept;
@@ -152,19 +152,18 @@ private:
     @note Internal implementation detail. Users interact with file_stream class.
 */
 class gcd_file_impl
-    : public boost::corosio::detail::intrusive_list<gcd_file_impl>::node
-    , public boost::corosio::io_stream
+    : public boost::corosio::io_stream::io_stream_impl
+    , public boost::corosio::detail::intrusive_list<gcd_file_impl>::node
 {
     friend class gcd_file_service;
 
 public:
-explicit gcd_file_impl(std::shared_ptr<gcd_file_impl_internal> internal)
-    : io_stream(internal->svc_.context())
-    , internal_(std::move(internal))
-{
-}
+    explicit gcd_file_impl(std::shared_ptr<gcd_file_impl_internal> internal)
+        : internal_(std::move(internal))
+    {
+    }
 
-    void release() override;
+    void release();
 
     std::coroutine_handle<> read_some(
         std::coroutine_handle<> h,
@@ -172,7 +171,7 @@ explicit gcd_file_impl(std::shared_ptr<gcd_file_impl_internal> internal)
         boost::corosio::io_buffer_param buffers,
         std::stop_token token,
         std::error_code* ec,
-        std::size_t* bytes_transferred) override
+        std::size_t* bytes_transferred)
     {
         return internal_->read_some(h, ex, buffers, token, ec, bytes_transferred);
     }
@@ -183,7 +182,7 @@ explicit gcd_file_impl(std::shared_ptr<gcd_file_impl_internal> internal)
         boost::corosio::io_buffer_param buffers,
         std::stop_token token,
         std::error_code* ec,
-        std::size_t* bytes_transferred) override
+        std::size_t* bytes_transferred)
     {
         return internal_->write_some(h, ex, buffers, token, ec, bytes_transferred);
     }
