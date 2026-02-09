@@ -8,8 +8,11 @@
 
 #include <dispatch/dispatch.h>
 #include <sys/types.h>
+#include <coroutine>
 #include <cstdint>
 #include <memory>
+#include <system_error>
+#include <utility>
 
 namespace boost::corosio::detail
 {
@@ -46,6 +49,23 @@ struct file_read_op : boost::corosio::detail::scheduler_op
     /** Shared pointer to keep internal alive during async operation. */
     std::shared_ptr<gcd_file_impl_internal> internal_ptr;
 
+    /** Output parameters for operation results. */
+    std::error_code* ec_out = nullptr;
+    std::size_t* bytes_out = nullptr;
+
+    /** Coroutine handle to resume. */
+    std::coroutine_handle<> handler_;
+
+    /** Cleanup without resuming coroutine. */
+    void cleanup_only() noexcept {}
+
+    /** Resume the coroutine. */
+    void invoke_handler() noexcept
+    {
+        if (handler_)
+            handler_.resume();
+    }
+
     /** Completion callback invoked when GCD operation completes.
 
         @param owner Pointer to the service that owns this operation
@@ -56,7 +76,7 @@ struct file_read_op : boost::corosio::detail::scheduler_op
     static void do_complete(
         void* owner,
         boost::corosio::detail::scheduler_op* base,
-        std::int32_t res,
+        std::uint32_t res,
         std::uint32_t flags);
 
     /** Cancellation callback.
@@ -99,6 +119,23 @@ struct file_write_op : boost::corosio::detail::scheduler_op
     /** Shared pointer to keep internal alive during async operation. */
     std::shared_ptr<gcd_file_impl_internal> internal_ptr;
 
+    /** Output parameters for operation results. */
+    std::error_code* ec_out = nullptr;
+    std::size_t* bytes_out = nullptr;
+
+    /** Coroutine handle to resume. */
+    std::coroutine_handle<> handler_;
+
+    /** Cleanup without resuming coroutine. */
+    void cleanup_only() noexcept {}
+
+    /** Resume the coroutine. */
+    void invoke_handler() noexcept
+    {
+        if (handler_)
+            handler_.resume();
+    }
+
     /** Completion callback invoked when GCD operation completes.
 
         @param owner Pointer to the service that owns this operation
@@ -109,7 +146,7 @@ struct file_write_op : boost::corosio::detail::scheduler_op
     static void do_complete(
         void* owner,
         boost::corosio::detail::scheduler_op* base,
-        std::int32_t res,
+        std::uint32_t res,
         std::uint32_t flags);
 
     /** Cancellation callback.

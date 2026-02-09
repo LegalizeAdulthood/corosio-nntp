@@ -59,7 +59,7 @@ void
 file_read_op::do_complete(
     void* owner,
     boost::corosio::detail::scheduler_op* base,
-    std::int32_t res,
+    std::uint32_t res,
     std::uint32_t /*flags*/)
 {
     auto* op = static_cast<file_read_op*>(base);
@@ -76,13 +76,14 @@ file_read_op::do_complete(
     // The res parameter contains:
     // - Positive value: number of bytes transferred
     // - Zero: EOF for read operations
-    // - Negative value: -errno
+    // - Negative value: -errno (as unsigned, will be large positive)
+    auto result = static_cast<std::int32_t>(res);
 
     // Hold shared_ptr to prevent premature destruction of internal
     auto prevent_premature_destruction = std::move(op->internal_ptr);
 
     // Process result
-    if (res >= 0)
+    if (result >= 0)
     {
         // Success: res is bytes transferred
         if (op->bytes_out)
@@ -137,7 +138,7 @@ void
 file_write_op::do_complete(
     void* owner,
     boost::corosio::detail::scheduler_op* base,
-    std::int32_t res,
+    std::uint32_t res,
     std::uint32_t /*flags*/)
 {
     auto* op = static_cast<file_write_op*>(base);
@@ -153,22 +154,23 @@ file_write_op::do_complete(
     // Normal completion path
     // The res parameter contains:
     // - Positive value: number of bytes transferred
-    // - Negative value: -errno
+    // - Negative value: -errno (as unsigned, will be large positive)
+    auto result = static_cast<std::int32_t>(res);
 
     // Hold shared_ptr to prevent premature destruction of internal
     auto prevent_premature_destruction = std::move(op->internal_ptr);
 
     // Process result
-    if (res >= 0)
+    if (result >= 0)
     {
-        // Success: res is bytes transferred
+        // Success: result is bytes transferred
         if (op->bytes_out)
-            *op->bytes_out = static_cast<std::size_t>(res);
+            *op->bytes_out = static_cast<std::size_t>(result);
 
         // Update file position after successful write
-        if (res > 0)
+        if (result > 0)
         {
-            op->internal.position_ += res;
+            op->internal.position_ += result;
         }
 
         if (op->ec_out)
@@ -176,20 +178,20 @@ file_write_op::do_complete(
     }
     else
     {
-        // Error: res is -errno
+        // Error: result is -errno
         if (op->bytes_out)
             *op->bytes_out = 0;
 
         if (op->ec_out)
         {
             // Check for cancellation
-            if (-res == ECANCELED)
+            if (-result == ECANCELED)
             {
                 *op->ec_out = boost::capy::cond::canceled;
             }
             else
             {
-                *op->ec_out = boost::corosio::detail::make_err(-res);
+                *op->ec_out = boost::corosio::detail::make_err(-result);
             }
         }
     }

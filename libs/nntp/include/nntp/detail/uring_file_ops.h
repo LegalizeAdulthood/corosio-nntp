@@ -8,8 +8,10 @@
 
 #include <liburing.h>
 #include <sys/types.h>
+#include <coroutine>
 #include <cstdint>
 #include <memory>
+#include <system_error>
 #include <utility>
 
 namespace boost::corosio::detail
