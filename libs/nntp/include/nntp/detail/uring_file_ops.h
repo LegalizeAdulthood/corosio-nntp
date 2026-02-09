@@ -30,7 +30,7 @@ class uring_file_impl_internal;
 
     @note Internal implementation detail.
 */
-struct file_read_op : boost::corosio::detail::io_awaitable_op
+struct file_read_op : boost::corosio::detail::scheduler_op
 {
     /** Buffer pointer for the read operation. */
     void* buffer_ptr = nullptr;
@@ -46,6 +46,23 @@ struct file_read_op : boost::corosio::detail::io_awaitable_op
 
     /** Shared pointer to keep internal alive during async operation. */
     std::shared_ptr<uring_file_impl_internal> internal_ptr;
+
+    /** Output parameters for operation results. */
+    std::error_code* ec_out = nullptr;
+    std::size_t* bytes_out = nullptr;
+
+    /** Coroutine handle to resume. */
+    std::coroutine_handle<> handler_;
+
+    /** Cleanup without resuming coroutine. */
+    void cleanup_only() noexcept {}
+
+    /** Resume the coroutine. */
+    void invoke_handler() noexcept
+    {
+        if (handler_)
+            handler_.resume();
+    }
 
     /** Completion callback invoked when CQE arrives.
 
