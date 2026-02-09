@@ -110,7 +110,7 @@ public:
 
         @return Reference to the execution context.
     */
-    boost::capy::execution_context& context() noexcept { return sched_.context(); }
+    boost::capy::execution_context& context() noexcept;
 
     /** Notify service that work has started. */
     void work_started() noexcept;

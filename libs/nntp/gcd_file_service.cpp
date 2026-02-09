@@ -145,6 +145,12 @@ gcd_file_service::open_file(
     return {};
 }
 
+boost::capy::execution_context&
+gcd_file_service::context() noexcept
+{
+    return sched_.context();
+}
+
 void
 gcd_file_service::work_started() noexcept
 {

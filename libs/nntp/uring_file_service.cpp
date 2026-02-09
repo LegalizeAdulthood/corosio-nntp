@@ -200,6 +200,12 @@ uring_file_service::open_file(
     return {};
 }
 
+boost::capy::execution_context&
+uring_file_service::context() noexcept
+{
+    return sched_.context();
+}
+
 void
 uring_file_service::work_started() noexcept
 {
