@@ -26,7 +26,7 @@ win_file_service::~win_file_service()
 void
 win_file_service::shutdown()
 {
-    std::lock_guard<boost::corosio::detail::win_mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
 
     // Close all files and remove from list
     // The shared_ptrs held by file objects and operations will handle destruction
@@ -51,14 +51,14 @@ win_file_service::create_impl()
     auto internal = std::make_shared<win_file_impl_internal>(*this);
 
     {
-        std::lock_guard<boost::corosio::detail::win_mutex> lock(mutex_);
+        std::scoped_lock lock(mutex_);
         file_list_.push_back(internal.get());
     }
 
     auto* wrapper = new win_file_impl(std::move(internal));
 
     {
-        std::lock_guard<boost::corosio::detail::win_mutex> lock(mutex_);
+        std::scoped_lock lock(mutex_);
         wrapper_list_.push_back(wrapper);
     }
 
@@ -69,7 +69,7 @@ void
 win_file_service::destroy_impl(win_file_impl& impl)
 {
     {
-        std::lock_guard<boost::corosio::detail::win_mutex> lock(mutex_);
+        std::scoped_lock lock(mutex_);
         wrapper_list_.remove(&impl);
     }
     delete &impl;
@@ -78,7 +78,7 @@ win_file_service::destroy_impl(win_file_impl& impl)
 void
 win_file_service::unregister_impl(win_file_impl_internal& impl)
 {
-    std::lock_guard<boost::corosio::detail::win_mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
     file_list_.remove(&impl);
 }
 
