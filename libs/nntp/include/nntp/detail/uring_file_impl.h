@@ -97,12 +97,12 @@ public:
     /** Cancel pending I/O operations. */
     void cancel() noexcept;
 
+    /** Close the file. */
+    void close_file() noexcept;
+
 private:
     /** Set the file descriptor. */
     void set_fd(int fd) noexcept { fd_ = fd; }
-
-    /** Close the file. */
-    void close_file() noexcept;
 
     /** Submit a read SQE to io_uring. */
     void do_read_io();
@@ -141,8 +141,8 @@ private:
     @note Internal implementation detail. Users interact with file_stream class.
 */
 class uring_file_impl
-    : public boost::corosio::detail::intrusive_list<uring_file_impl>::node
-    , public boost::corosio::io_stream
+    : public boost::corosio::io_stream::io_stream_impl
+    , public boost::corosio::detail::intrusive_list<uring_file_impl>::node
 {
     friend class uring_file_service;
 
@@ -152,7 +152,7 @@ public:
     {
     }
 
-    void release() override;
+    void release();
 
     std::coroutine_handle<> read_some(
         std::coroutine_handle<> h,
@@ -160,7 +160,7 @@ public:
         boost::corosio::io_buffer_param buffers,
         std::stop_token token,
         std::error_code* ec,
-        std::size_t* bytes_transferred) override
+        std::size_t* bytes_transferred)
     {
         return internal_->read_some(h, ex, buffers, token, ec, bytes_transferred);
     }
@@ -171,7 +171,7 @@ public:
         boost::corosio::io_buffer_param buffers,
         std::stop_token token,
         std::error_code* ec,
-        std::size_t* bytes_transferred) override
+        std::size_t* bytes_transferred)
     {
         return internal_->write_some(h, ex, buffers, token, ec, bytes_transferred);
     }
