@@ -5,11 +5,13 @@
 
 #include <boost/corosio/detail/config.hpp>
 #include "src/detail/scheduler_op.hpp"
+#include "src/detail/io_awaitable_op.hpp"
 
 #include <liburing.h>
 #include <sys/types.h>
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 namespace boost::corosio::detail
 {
@@ -29,7 +31,7 @@ class uring_file_impl_internal;
 
     @note Internal implementation detail.
 */
-struct file_read_op : boost::corosio::detail::scheduler_op
+struct file_read_op : boost::corosio::detail::io_awaitable_op
 {
     /** Buffer pointer for the read operation. */
     void* buffer_ptr = nullptr;
@@ -56,7 +58,7 @@ struct file_read_op : boost::corosio::detail::scheduler_op
     static void do_complete(
         void* owner,
         boost::corosio::detail::scheduler_op* base,
-        std::int32_t res,
+        std::uint32_t res,
         std::uint32_t flags);
 
     /** Cancellation callback.
@@ -82,7 +84,7 @@ struct file_read_op : boost::corosio::detail::scheduler_op
 
     @note Internal implementation detail.
 */
-struct file_write_op : boost::corosio::detail::scheduler_op
+struct file_write_op : boost::corosio::detail::io_awaitable_op
 {
     /** Buffer pointer for the write operation. */
     const void* buffer_ptr = nullptr;
@@ -109,7 +111,7 @@ struct file_write_op : boost::corosio::detail::scheduler_op
     static void do_complete(
         void* owner,
         boost::corosio::detail::scheduler_op* base,
-        std::int32_t res,
+        std::uint32_t res,
         std::uint32_t flags);
 
     /** Cancellation callback.

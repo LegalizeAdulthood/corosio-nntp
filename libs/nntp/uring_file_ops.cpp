@@ -40,14 +40,14 @@ void file_read_op::do_cancel_impl(file_read_op* op) noexcept
     if (op->internal.is_open())
     {
         io_uring* ring = op->internal.svc_.native_handle();
-        
+
         // Get an SQE for the cancel operation
         io_uring_sqe* sqe = io_uring_get_sqe(ring);
         if (sqe)
         {
             // Prepare cancel operation targeting this operation
             io_uring_prep_cancel(sqe, op, 0);
-            
+
             // Submit the cancel request
             io_uring_submit(ring);
         }
@@ -60,14 +60,14 @@ void file_write_op::do_cancel_impl(file_write_op* op) noexcept
     if (op->internal.is_open())
     {
         io_uring* ring = op->internal.svc_.native_handle();
-        
+
         // Get an SQE for the cancel operation
         io_uring_sqe* sqe = io_uring_get_sqe(ring);
         if (sqe)
         {
             // Prepare cancel operation targeting this operation
             io_uring_prep_cancel(sqe, op, 0);
-            
+
             // Submit the cancel request
             io_uring_submit(ring);
         }
@@ -79,10 +79,10 @@ void file_write_op::do_cancel_impl(file_write_op* op) noexcept
 
 void
 file_read_op::do_complete(
-    void* owner,
-    boost::corosio::detail::scheduler_op* base,
-    std::int32_t res,
-    std::uint32_t /*flags*/)
+void* owner,
+boost::corosio::detail::scheduler_op* base,
+std::uint32_t res,
+std::uint32_t /*flags*/)
 {
     auto* op = static_cast<file_read_op*>(base);
 
@@ -98,26 +98,27 @@ file_read_op::do_complete(
     // The res parameter from io_uring CQE contains:
     // - Positive value: number of bytes transferred
     // - Zero: EOF for read operations
-    // - Negative value: -errno
+    // - Negative value: -errno error code
+    auto result = static_cast<std::int32_t>(res);
 
     // Hold shared_ptr to prevent premature destruction of internal
     auto prevent_premature_destruction = std::move(op->internal_ptr);
 
     // Process result
-    if (res >= 0)
+    if (result >= 0)
     {
-        // Success: res is bytes transferred
+        // Success: result is bytes transferred
         if (op->bytes_out)
-            *op->bytes_out = static_cast<std::size_t>(res);
+            *op->bytes_out = static_cast<std::size_t>(result);
 
         // Update file position after successful read
-        if (res > 0)
+        if (result > 0)
         {
-            op->internal.position_ += res;
+            op->internal.position_ += result;
         }
 
         // Check for EOF
-        if (res == 0)
+        if (result == 0)
         {
             if (op->ec_out)
                 *op->ec_out = boost::capy::cond::eof;
@@ -130,20 +131,20 @@ file_read_op::do_complete(
     }
     else
     {
-        // Error: res is -errno
+        // Error: result is -errno
         if (op->bytes_out)
             *op->bytes_out = 0;
 
         if (op->ec_out)
         {
             // Check for cancellation
-            if (-res == ECANCELED)
+            if (-result == ECANCELED)
             {
                 *op->ec_out = boost::capy::cond::canceled;
             }
             else
             {
-                *op->ec_out = boost::corosio::detail::make_err(-res);
+                *op->ec_out = boost::corosio::detail::make_err(-result);
             }
         }
     }
@@ -157,10 +158,10 @@ file_read_op::do_complete(
 
 void
 file_write_op::do_complete(
-    void* owner,
-    boost::corosio::detail::scheduler_op* base,
-    std::int32_t res,
-    std::uint32_t /*flags*/)
+void* owner,
+boost::corosio::detail::scheduler_op* base,
+std::uint32_t res,
+std::uint32_t /*flags*/)
 {
     auto* op = static_cast<file_write_op*>(base);
 
@@ -176,21 +177,22 @@ file_write_op::do_complete(
     // The res parameter from io_uring CQE contains:
     // - Positive value: number of bytes transferred
     // - Negative value: -errno
+    auto result = static_cast<std::int32_t>(res);
 
     // Hold shared_ptr to prevent premature destruction of internal
     auto prevent_premature_destruction = std::move(op->internal_ptr);
 
     // Process result
-    if (res >= 0)
+    if (result >= 0)
     {
-        // Success: res is bytes transferred
+        // Success: result is bytes transferred
         if (op->bytes_out)
-            *op->bytes_out = static_cast<std::size_t>(res);
+            *op->bytes_out = static_cast<std::size_t>(result);
 
         // Update file position after successful write
-        if (res > 0)
+        if (result > 0)
         {
-            op->internal.position_ += res;
+            op->internal.position_ += result;
         }
 
         if (op->ec_out)
@@ -198,20 +200,20 @@ file_write_op::do_complete(
     }
     else
     {
-        // Error: res is -errno
+        // Error: result is -errno
         if (op->bytes_out)
             *op->bytes_out = 0;
 
         if (op->ec_out)
         {
             // Check for cancellation
-            if (-res == ECANCELED)
+            if (-result == ECANCELED)
             {
                 *op->ec_out = boost::capy::cond::canceled;
             }
             else
             {
-                *op->ec_out = boost::corosio::detail::make_err(-res);
+                *op->ec_out = boost::corosio::detail::make_err(-result);
             }
         }
     }
