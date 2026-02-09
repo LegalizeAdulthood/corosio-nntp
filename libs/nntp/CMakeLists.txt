@@ -18,7 +18,8 @@ if(WIN32)
         win_file_impl.cpp
         win_file_service.cpp
     )
-elseif(UNIX)
+elseif(UNIX AND NOT APPLE)
+    # Linux
     target_sources(nntp PRIVATE
         include/nntp/detail/uring_file_ops.h
         include/nntp/detail/uring_file_impl.h
@@ -33,6 +34,17 @@ elseif(UNIX)
     pkg_check_modules(URING REQUIRED liburing>=2.0)
     target_link_libraries(nntp PRIVATE ${URING_LIBRARIES})
     target_include_directories(nntp PRIVATE ${URING_INCLUDE_DIRS})
+elseif(APPLE)
+    # macOS
+    target_sources(nntp PRIVATE
+        include/nntp/detail/gcd_file_ops.h
+        include/nntp/detail/gcd_file_impl.h
+        include/nntp/detail/gcd_file_service.h
+        gcd_file_ops.cpp
+        gcd_file_impl.cpp
+        gcd_file_service.cpp
+    )
+    # No external dependencies - GCD is built-in
 endif()
 
 target_include_directories(nntp PUBLIC include)
