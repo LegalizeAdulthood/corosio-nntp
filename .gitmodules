@@ -7,3 +7,6 @@
 [submodule "capy"]
 	path = libs/capy
 	url = https://github.com/cppalliance/capy
+[submodule "libs/http"]
+	path = libs/http
+	url = https://github.com/cppalliance/http.git
