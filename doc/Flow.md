@@ -67,3 +67,69 @@ While waiting for user input, the reader should be asynchronously gathering
 information on Browsing Groups, newsgroups and articles.  It should be
 eagerly applying KILL file rules and other processing while the user is
 reading an article or deciding about newsgroup subscription.
+
+# NNTP Conversation
+
+Just as [boost.http (unofficial)](https://github.com/cppalliance/http) models
+the HTTP request and response in a manner that is ignorant of the underlying
+transport, an NNTP client (and server) doesn't care about the particular I/O
+transport involved.  The client sends commands to a server and receives
+responses.  The server accepts commands and sends responses.
+
+Unlike HTTP, NNTP is stateful.  There is a notion of the current newsgroup,
+article, etc.  The connection is always persistent.  Additionally, there is the
+STARTTLS command that switches a connection from insecure to secure using TLS
+after the connection has been made.  This is the one command that directly
+interacts with the underlying transport.
+
+This implies that there is an NNTP library that understands the vocabulary of
+usenet: newsgroup names, wildcard patterns, articles, article numbers, message
+ids, the anatomy of an article: header, body and so-on.  Like the boost.http
+library there's a lot of vocabulary here that should be represented explicitly
+by types for composition and clarity of API.  There's a bunch of stuff that can
+be stolen from boost.http, but there are also some important differences with
+regards to message formatting.  HTTP doesn't line-fold headers, for instance.
+
+From slack discussion on `STARTTLS`:
+
+sgerbino wrote:
+> Claude suggested something like this:
+
+```cpp
+// Caller -- owns the TLS policy
+capy::task<void>
+serve_nntp(tcp_socket sock, tls_context* tls_ctx, bool implicit_tls)
+{
+    capy::any_stream stream(std::move(sock));
+
+    // Port 563: wrap in TLS before protocol starts
+    if(implicit_tls)
+    {
+        openssl_stream tls(std::move(stream), *tls_ctx);
+        co_await tls.handshake(tls_stream::server);
+        stream = capy::any_stream(std::move(tls));
+    }
+
+    nntp_session session;
+    auto act = co_await session.run(
+        stream, tls_ctx && !implicit_tls);
+
+    if(act == nntp_session::action::starttls)
+    {
+        // 382 already sent by protocol layer
+        openssl_stream tls(std::move(stream), *tls_ctx);
+        co_await tls.handshake(tls_stream::server);
+        stream = capy::any_stream(std::move(tls));
+
+        // Re-enter -- TLS available=false prevents double upgrade
+        co_await session.run(stream, false);
+    }
+}
+```
+
+vinnie wrote:
+> type-erase two streams
+> alternatively encapsulate the non-regular behavior in a function pointer or a virtual member
+
+All of this seems to imply that the first step is to create a sans-I/O NNTP
+library with the vocabulary involved in NNTP conversations.
