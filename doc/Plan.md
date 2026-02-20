@@ -515,12 +515,12 @@ libs/nntp/
 
 ## References
 
-- NNTP RFC 3977 (NNTP Protocol) - See sections 3.1 (Line Format, UTF-8), 5.3 (Capability Requirements), 7 (Commands)
-- NNTP RFC 4642 (NNTP over TLS)
-- NNTP RFC 6048 (Additional NNTP Commands)
-- RFC 5322 (Internet Message Format) - Article header format
-- RFC 2047 (MIME Encoded-Word Syntax) - Non-ASCII headers
-- RFC 3629 (UTF-8 Validation) - UTF-8 character validation
-- SMTP RFC 5321 (command/response patterns)
-- INN News Server (https://www.eyrie.org/~eagle/software/inn/) documentation
-- HTTP sans-I/O implementations for patterns
+- NNTP [RFC 3977](https://datatracker.ietf.org/doc/html/rfc3977) (NNTP Protocol) - See sections 3.1 (Line Format, UTF-8), 5.3 (Capability Requirements), 7 (Commands)
+- NNTP [RFC 4642](https://datatracker.ietf.org/doc/html/rfc4642) (NNTP over TLS)
+- NNTP [RFC 6048](https://datatracker.ietf.org/doc/html/rfc6048) (Additional NNTP Commands)
+- [RFC 5322](https://datatracker.ietf.org/doc/html/rfc5322) (Internet Message Format) - Article header format
+- [RFC 2047](https://datatracker.ietf.org/doc/html/rfc2047) (MIME Encoded-Word Syntax) - Non-ASCII headers
+- [RFC 3629](https://datatracker.ietf.org/doc/html/rfc3629) (UTF-8 Validation) - UTF-8 character validation
+- SMTP [RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321) (command/response patterns)
+- [INN News Server](https://www.eyrie.org/~eagle/software/inn/) documentation
+- [HTTP sans-I/O](https://github.com/cppalliance/http) implementations for patterns
