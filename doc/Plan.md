@@ -81,6 +81,15 @@ NNTP commands use the following semantic value types for arguments:
 | `mechanism` | SASL authentication mechanism | Mechanism identifier | `"LOGIN"`, `"PLAIN"` |
 | `algorithm` | Compression algorithm | Algorithm identifier | `"DEFLATE"`, `"GZIP"` |
 
+##### 3.1.1 Message-ID Requirements (NNTP)
+
+- RFC 3977 grammar: `message-id = "<" 1*248A-NOTGT ">"`.
+- Length: 1 to 248 `A-NOTGT` characters between the angle brackets.
+- `A-CHAR` is US-ASCII `%x21-7E` (printable, excluding controls and SP).
+- `A-NOTGT` is `A-CHAR` excluding `>`.
+- ASCII only: no UTF-8 or non-ASCII code points.
+- No surrounding whitespace, comments, or folding.
+
 #### 3.2 Method Interface
 
 The protocol handler provides a typed method interface for newsreader clients. Each NNTP command from section 4.1 has a corresponding method on the handler. Clients call these methods directly, passing command arguments as strings:
