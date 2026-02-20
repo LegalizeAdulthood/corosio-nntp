@@ -1,4 +1,5 @@
 add_library(nntp
+    include/nntp/Article.h
     include/nntp/client.h
     client.cpp
 )
