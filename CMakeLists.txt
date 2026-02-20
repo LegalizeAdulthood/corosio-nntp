@@ -40,3 +40,6 @@ misc_group_sources("GitHub" FILES
     ".github/workflows/cmake.yml")
 misc_group_sources("VcPkg" FILES
     "vcpkg.json")
+misc_group_sources("Documentation" FILES
+    "doc/Flow.md"
+    "doc/Plan.md")
