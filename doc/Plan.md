@@ -90,6 +90,16 @@ NNTP commands use the following semantic value types for arguments:
 - ASCII only: no UTF-8 or non-ASCII code points.
 - No surrounding whitespace, comments, or folding.
 
+##### 3.1.2 Newsgroup-Name Requirements (NNTP)
+
+- RFC 3977 grammar: `newsgroup-name = 1*wildmat-exact`.
+- Minimum length: 1 character.
+- `wildmat-exact` is `%x22-29 / %x2B / %x2D-3E / %x40-5A / %x5E-7E / UTF8-non-ascii`.
+- Excludes wildcard characters: `! * , ? [ \ ]`.
+- Excludes: space, control characters.
+- Allows UTF-8 for international newsgroup names.
+- Typical format: hierarchical dot-separated components (e.g., `comp.lang.c`)
+
 #### 3.2 Method Interface
 
 The protocol handler provides a typed method interface for newsreader clients. Each NNTP command from section 4.1 has a corresponding method on the handler. Clients call these methods directly, passing command arguments as strings:
