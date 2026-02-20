@@ -46,6 +46,6 @@ elseif(APPLE)
 endif()
 
 target_include_directories(fileio PUBLIC include)
-target_include_directories(fileio PRIVATE ../corosio/src/corosio)
+target_include_directories(fileio PRIVATE ../boost/corosio/src/corosio)
 target_link_libraries(fileio PUBLIC Boost::corosio)
 target_folder(fileio "Libraries")

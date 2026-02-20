@@ -2,11 +2,11 @@
 	path = vcpkg
 	url = https://github.com/microsoft/vcpkg
 [submodule "corosio"]
-	path = libs/corosio
+	path = libs/boost/corosio
 	url = https://github.com/cppalliance/corosio.git
 [submodule "capy"]
-	path = libs/capy
+	path = libs/boost/capy
 	url = https://github.com/cppalliance/capy
 [submodule "libs/http"]
-	path = libs/http
+	path = libs/boost/http
 	url = https://github.com/cppalliance/http.git

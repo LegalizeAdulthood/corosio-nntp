@@ -1,0 +1,23 @@
+include(stop_token)
+find_package(Boost REQUIRED COMPONENTS core json static_assert type_traits url)
+
+set(BOOST_CAPY_BUILD_TESTS OFF)
+set(BOOST_CAPY_BUILD_EXAMPLES OFF)
+set(BOOST_CAPY_MRDOCS_BUILD OFF)
+add_subdirectory(capy)
+stop_token(boost_capy)
+target_folder(boost_capy "Libraries/Boost")
+target_folder(boost_capy_bench "Tools/Boost")
+
+set(BOOST_COROSIO_BUILD_TESTS OFF)
+set(BOOST_COROSIO_BUILD_BENCH OFF)
+set(BOOST_COROSIO_BUILD_EXAMPLES OFF)
+set(BOOST_COROSIO_BUILD_DOCS OFF)
+set(BOOST_COROSIO_MRDOCS_BUILD OFF)
+add_subdirectory(corosio)
+target_folder(boost_corosio "Libraries/Boost")
+
+set(BOOST_HTTP_BUILD_TESTS OFF)
+set(BOOST_HTTP_BUILD_EXAMPLES OFF)
+add_subdirectory(http EXCLUDE_FROM_ALL)
+target_folder(boost_http "Libraries/Boost")
