@@ -5,6 +5,10 @@
   "version-semver": "1.0.0",
   "dependencies": [
     "boost-core",
+    "boost-json",
+    "boost-static-assert",
+    "boost-type-traits",
+    "boost-url",
     "gtest"
   ]
 }

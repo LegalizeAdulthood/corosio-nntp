@@ -1,5 +1,5 @@
 include(stop_token)
-find_package(Boost REQUIRED COMPONENTS core)
+find_package(Boost REQUIRED COMPONENTS core json static_assert type_traits url)
 
 set(BOOST_CAPY_BUILD_TESTS OFF)
 set(BOOST_CAPY_BUILD_EXAMPLES OFF)
@@ -16,5 +16,10 @@ set(BOOST_COROSIO_BUILD_DOCS OFF)
 set(BOOST_COROSIO_MRDOCS_BUILD OFF)
 add_subdirectory(corosio)
 target_folder(boost_corosio "Libraries/Boost")
+
+set(BOOST_HTTP_BUILD_TESTS OFF)
+set(BOOST_HTTP_BUILD_EXAMPLES OFF)
+add_subdirectory(http)
+target_folder(boost_http "Libraries/Boost")
 
 add_subdirectory(nntp)
