@@ -1,7 +1,7 @@
 #ifndef NNTP_TEST_MOCK_FILE_STREAM_H
 #define NNTP_TEST_MOCK_FILE_STREAM_H
 
-#include <nntp/file_stream.h>
+#include <fileio/file_stream.h>
 #include <boost/capy/buffers.hpp>
 #include <boost/capy/buffers/buffer_copy.hpp>
 #include <boost/capy/buffers/make_buffer.hpp>

@@ -19,7 +19,8 @@ target_folder(boost_corosio "Libraries/Boost")
 
 set(BOOST_HTTP_BUILD_TESTS OFF)
 set(BOOST_HTTP_BUILD_EXAMPLES OFF)
-add_subdirectory(http)
+add_subdirectory(http EXCLUDE_FROM_ALL)
 target_folder(boost_http "Libraries/Boost")
 
+add_subdirectory(fileio)
 add_subdirectory(nntp)

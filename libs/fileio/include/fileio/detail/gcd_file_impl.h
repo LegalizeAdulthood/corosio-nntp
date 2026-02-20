@@ -3,7 +3,7 @@
 
 #ifdef __APPLE__
 
-#include <nntp/detail/gcd_file_ops.h>
+#include <fileio/detail/gcd_file_ops.h>
 #include <boost/corosio/io_stream.hpp>
 #include <boost/corosio/io_buffer_param.hpp>
 #include <boost/capy/ex/executor_ref.hpp>

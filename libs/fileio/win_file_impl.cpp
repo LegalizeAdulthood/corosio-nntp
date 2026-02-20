@@ -1,7 +1,7 @@
 #ifdef _WIN32
 
-#include <nntp/detail/win_file_impl.h>
-#include <nntp/detail/win_file_service.h>
+#include <fileio/detail/win_file_impl.h>
+#include <fileio/detail/win_file_service.h>
 #include <boost/corosio/detail/platform.hpp>
 
 #if BOOST_COROSIO_HAS_IOCP

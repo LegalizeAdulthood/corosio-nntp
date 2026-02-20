@@ -1,7 +1,7 @@
 #ifdef __APPLE__
 
-#include <nntp/detail/gcd_file_service.h>
-#include <nntp/detail/gcd_file_impl.h>
+#include <fileio/detail/gcd_file_service.h>
+#include <fileio/detail/gcd_file_impl.h>
 #include <boost/corosio/detail/platform.hpp>
 
 #if BOOST_COROSIO_HAS_KQUEUE

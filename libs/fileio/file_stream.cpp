@@ -1,10 +1,10 @@
-#include <nntp/file_stream.h>
+#include <fileio/file_stream.h>
 #include <boost/corosio/detail/platform.hpp>
 
 #if BOOST_COROSIO_HAS_IOCP
 
-#include <nntp/detail/win_file_service.h>
-#include <nntp/detail/win_file_impl.h>
+#include <fileio/detail/win_file_service.h>
+#include <fileio/detail/win_file_impl.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -135,8 +135,8 @@ file_stream::cancel() noexcept
 
 #elif defined(__linux__)
 
-#include <nntp/detail/uring_file_service.h>
-#include <nntp/detail/uring_file_impl.h>
+#include <fileio/detail/uring_file_service.h>
+#include <fileio/detail/uring_file_impl.h>
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -269,8 +269,8 @@ file_stream::cancel() noexcept
 
 #elif defined(__APPLE__)
 
-#include <nntp/detail/gcd_file_service.h>
-#include <nntp/detail/gcd_file_impl.h>
+#include <fileio/detail/gcd_file_service.h>
+#include <fileio/detail/gcd_file_impl.h>
 
 #include <fcntl.h>
 #include <unistd.h>

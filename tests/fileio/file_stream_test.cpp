@@ -1,4 +1,4 @@
-#include <nntp/file_stream.h>
+#include <fileio/file_stream.h>
 #include <boost/corosio/io_context.hpp>
 #include <boost/capy/ex/run_async.hpp>
 #include <boost/capy/task.hpp>

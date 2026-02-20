@@ -1,30 +1,30 @@
-#ifdef __linux__
+#ifdef __APPLE__
 
-#include <nntp/detail/uring_file_ops.h>
-#include <nntp/detail/uring_file_impl.h>
-#include <nntp/detail/uring_file_service.h>
+#include <fileio/detail/gcd_file_ops.h>
+#include <fileio/detail/gcd_file_impl.h>
+#include <fileio/detail/gcd_file_service.h>
 #include <boost/corosio/detail/platform.hpp>
 
-#if BOOST_COROSIO_HAS_EPOLL
+#if BOOST_COROSIO_HAS_KQUEUE
 
 #include "src/detail/make_err.hpp"
 #include "src/detail/resume_coro.hpp"
 #include <boost/capy/cond.hpp>
 
-#include <liburing.h>
+#include <dispatch/dispatch.h>
 
 namespace nntp::detail {
 
 //------------------------------------------------------------------------------
 // Operation constructors
 
-file_read_op::file_read_op(uring_file_impl_internal& internal_) noexcept
+file_read_op::file_read_op(gcd_file_impl_internal& internal_) noexcept
     : boost::corosio::detail::scheduler_op(&do_complete)
     , internal(internal_)
 {
 }
 
-file_write_op::file_write_op(uring_file_impl_internal& internal_) noexcept
+file_write_op::file_write_op(gcd_file_impl_internal& internal_) noexcept
     : boost::corosio::detail::scheduler_op(&do_complete)
     , internal(internal_)
 {
@@ -35,42 +35,20 @@ file_write_op::file_write_op(uring_file_impl_internal& internal_) noexcept
 
 void file_read_op::do_cancel_impl(file_read_op* op) noexcept
 {
-    // Cancel the I/O operation using io_uring
-    // io_uring_prep_cancel submits a cancellation request
-    if (op->internal.is_open())
+    // Cancel the I/O operation by closing the dispatch_io channel
+    // This will cause all pending operations to complete with ECANCELED
+    if (op->internal.is_open() && op->internal.channel_)
     {
-        io_uring* ring = op->internal.svc_.native_handle();
-
-        // Get an SQE for the cancel operation
-        io_uring_sqe* sqe = io_uring_get_sqe(ring);
-        if (sqe)
-        {
-            // Prepare cancel operation targeting this operation
-            io_uring_prep_cancel(sqe, op, 0);
-
-            // Submit the cancel request
-            io_uring_submit(ring);
-        }
+        dispatch_io_close(op->internal.channel_, DISPATCH_IO_STOP);
     }
 }
 
 void file_write_op::do_cancel_impl(file_write_op* op) noexcept
 {
-    // Cancel the I/O operation using io_uring
-    if (op->internal.is_open())
+    // Cancel the I/O operation by closing the dispatch_io channel
+    if (op->internal.is_open() && op->internal.channel_)
     {
-        io_uring* ring = op->internal.svc_.native_handle();
-
-        // Get an SQE for the cancel operation
-        io_uring_sqe* sqe = io_uring_get_sqe(ring);
-        if (sqe)
-        {
-            // Prepare cancel operation targeting this operation
-            io_uring_prep_cancel(sqe, op, 0);
-
-            // Submit the cancel request
-            io_uring_submit(ring);
-        }
+        dispatch_io_close(op->internal.channel_, DISPATCH_IO_STOP);
     }
 }
 
@@ -79,10 +57,10 @@ void file_write_op::do_cancel_impl(file_write_op* op) noexcept
 
 void
 file_read_op::do_complete(
-void* owner,
-boost::corosio::detail::scheduler_op* base,
-std::uint32_t res,
-std::uint32_t /*flags*/)
+    void* owner,
+    boost::corosio::detail::scheduler_op* base,
+    std::uint32_t res,
+    std::uint32_t /*flags*/)
 {
     auto* op = static_cast<file_read_op*>(base);
 
@@ -95,10 +73,10 @@ std::uint32_t /*flags*/)
     }
 
     // Normal completion path
-    // The res parameter from io_uring CQE contains:
+    // The res parameter contains:
     // - Positive value: number of bytes transferred
     // - Zero: EOF for read operations
-    // - Negative value: -errno error code
+    // - Negative value: -errno (as unsigned, will be large positive)
     auto result = static_cast<std::int32_t>(res);
 
     // Hold shared_ptr to prevent premature destruction of internal
@@ -121,8 +99,7 @@ std::uint32_t /*flags*/)
         if (result == 0)
         {
             if (op->ec_out)
-                *op->ec_out = std::error_code(static_cast<int>(boost::capy::cond::eof),
-                                               boost::capy::detail::cond_cat);
+                *op->ec_out = make_error_condition(boost::capy::cond::eof);
         }
         else
         {
@@ -141,8 +118,7 @@ std::uint32_t /*flags*/)
             // Check for cancellation
             if (-result == ECANCELED)
             {
-                *op->ec_out = std::error_code(static_cast<int>(boost::capy::cond::canceled),
-                                               boost::capy::detail::cond_cat);
+                *op->ec_out = make_error_condition(boost::capy::cond::canceled);
             }
             else
             {
@@ -160,10 +136,10 @@ std::uint32_t /*flags*/)
 
 void
 file_write_op::do_complete(
-void* owner,
-boost::corosio::detail::scheduler_op* base,
-std::uint32_t res,
-std::uint32_t /*flags*/)
+    void* owner,
+    boost::corosio::detail::scheduler_op* base,
+    std::uint32_t res,
+    std::uint32_t /*flags*/)
 {
     auto* op = static_cast<file_write_op*>(base);
 
@@ -176,9 +152,9 @@ std::uint32_t /*flags*/)
     }
 
     // Normal completion path
-    // The res parameter from io_uring CQE contains:
+    // The res parameter contains:
     // - Positive value: number of bytes transferred
-    // - Negative value: -errno
+    // - Negative value: -errno (as unsigned, will be large positive)
     auto result = static_cast<std::int32_t>(res);
 
     // Hold shared_ptr to prevent premature destruction of internal
@@ -211,8 +187,7 @@ std::uint32_t /*flags*/)
             // Check for cancellation
             if (-result == ECANCELED)
             {
-                *op->ec_out = std::error_code(static_cast<int>(boost::capy::cond::canceled),
-                                               boost::capy::detail::cond_cat);
+                *op->ec_out = make_error_condition(boost::capy::cond::canceled);
             }
             else
             {
@@ -227,6 +202,6 @@ std::uint32_t /*flags*/)
 
 } // namespace nntp::detail
 
-#endif // BOOST_COROSIO_HAS_EPOLL
+#endif // BOOST_COROSIO_HAS_KQUEUE
 
-#endif // __linux__
+#endif // __APPLE__

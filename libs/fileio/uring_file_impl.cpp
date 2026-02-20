@@ -1,7 +1,7 @@
 #ifdef __linux__
 
-#include <nntp/detail/uring_file_impl.h>
-#include <nntp/detail/uring_file_service.h>
+#include <fileio/detail/uring_file_impl.h>
+#include <fileio/detail/uring_file_service.h>
 #include <boost/corosio/detail/platform.hpp>
 
 #if BOOST_COROSIO_HAS_EPOLL

@@ -1,4 +1,4 @@
-#include <nntp/test/mock_file_stream.h>
+#include <fileio/test/mock_file_stream.h>
 
 namespace nntp::test {
 
