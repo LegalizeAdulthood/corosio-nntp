@@ -100,6 +100,23 @@ NNTP commands use the following semantic value types for arguments:
 - Allows UTF-8 for international newsgroup names.
 - Typical format: hierarchical dot-separated components (e.g., `comp.lang.c`)
 
+##### 3.1.3 Wildmat Requirements (NNTP)
+
+- RFC 3977 grammar:
+  - `wildmat = wildmat-pattern *("," ["!"] wildmat-pattern)`
+  - `wildmat-pattern = 1*wildmat-item`
+  - `wildmat-item = wildmat-exact / wildmat-wild`
+  - `wildmat-exact = %x22-29 / %x2B / %x2D-3E / %x40-5A / %x5E-7E / UTF8-non-ascii`
+  - `wildmat-wild = "*" / "?"`
+- `wildmat` must be non-empty and contain at least one `wildmat-pattern`.
+- `wildmat-pattern` must be non-empty and may include `*` and `?` wildcards.
+- `wildmat-exact` excludes `! * , ? [ \ ]`, space, and control characters.
+- Characters `,`, `[`, `]`, and `\` are not allowed in wildmats.
+- `*` matches zero or more characters; `?` matches exactly one character.
+- UTF-8 is allowed; wildcards must not split UTF-8 sequences.
+- `,` separates patterns; `!` negates the following pattern.
+- Matching semantics: the rightmost matching pattern decides; if it is negated, the wildmat does not match.
+
 #### 3.2 Method Interface
 
 The protocol handler provides a typed method interface for newsreader clients. Each NNTP command from section 4.1 has a corresponding method on the handler. Clients call these methods directly, passing command arguments as strings:
