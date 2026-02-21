@@ -8,6 +8,7 @@ add_executable(test-nntp
     ArticleRange_test.cpp
     ArticleSpec_test.cpp
     MessageId_test.cpp
+    Newsgroup_test.cpp
 )
 target_link_libraries(test-nntp PUBLIC nntp GTest::gtest_main)
 target_folder(test-nntp "Tests")

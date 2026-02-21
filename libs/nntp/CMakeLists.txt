@@ -6,6 +6,8 @@ add_library(nntp
     include/nntp/ArticleSpec.h
     include/nntp/MessageId.h
     MessageId.cpp
+    include/nntp/Newsgroup.h
+    Newsgroup.cpp
 
     # Conversational client API
     include/nntp/client.h
