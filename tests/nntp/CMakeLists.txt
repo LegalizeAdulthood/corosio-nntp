@@ -5,6 +5,7 @@ find_package(GTest CONFIG REQUIRED)
 add_executable(test-nntp
     nntp_test.cpp
     Article_test.cpp
+    ArticleRange_test.cpp
     ArticleSpec_test.cpp
     MessageId_test.cpp
 )

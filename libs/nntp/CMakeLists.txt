@@ -1,6 +1,8 @@
 add_library(nntp
     # Vocabulary value types
     include/nntp/Article.h
+    include/nntp/ArticleRange.h
+    ArticleRange.cpp
     include/nntp/ArticleSpec.h
     include/nntp/MessageId.h
     MessageId.cpp
