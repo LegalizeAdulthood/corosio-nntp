@@ -40,14 +40,14 @@ MessageId::MessageId(const std::string_view &value) :
     for (char c : content)
     {
         unsigned char uc = static_cast<unsigned char>(c);
-        
+
         // Must be in range 0x21-0x7E (printable ASCII excluding space)
         // This excludes: controls (0x00-0x1F), space (0x20), DEL (0x7F), and high bytes (0x80-0xFF)
         if (uc < 0x21 || uc > 0x7E)
         {
             throw std::invalid_argument("MessageId contains invalid character");
         }
-        
+
         // Cannot be '>' (0x3E)
         if (uc == 0x3E)
         {

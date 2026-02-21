@@ -1,16 +1,19 @@
 #pragma once
 
-#include "Article.h"
+#include <nntp/Article.h>
+
 #include <optional>
 #include <string>
 #include <string_view>
 
-namespace nntp {
+namespace nntp
+{
 
 /// Represents a range of NNTP article numbers
 /// Always valid: default construction yields 1-1 (single article)
 /// Can be bounded (begin-end) or unbounded (begin-)
-class ArticleRange {
+class ArticleRange
+{
 public:
     /// Default constructor - represents the bounded range 1-1
     ArticleRange() noexcept = default;
@@ -43,17 +46,17 @@ private:
     bool m_bounded{true};
 };
 
-inline bool operator==(const ArticleRange& lhs, const ArticleRange& rhs) noexcept
+inline bool operator==(const ArticleRange &lhs, const ArticleRange &rhs) noexcept
 {
     return lhs.begin() == rhs.begin() && lhs.end() == rhs.end() && lhs.is_bounded() == rhs.is_bounded();
 }
 
-inline bool operator!=(const ArticleRange& lhs, const ArticleRange& rhs) noexcept
+inline bool operator!=(const ArticleRange &lhs, const ArticleRange &rhs) noexcept
 {
     return !(lhs == rhs);
 }
 
 /// Convert article range to NNTP protocol string format
-std::string to_string(const ArticleRange& range);
+std::string to_string(const ArticleRange &range);
 
-}  // namespace nntp
+} // namespace nntp
