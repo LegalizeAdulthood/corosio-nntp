@@ -1,4 +1,4 @@
-﻿# Sans-I/O NNTP Library Implementation Plan
+# Sans-I/O NNTP Library Implementation Plan
 
 ## Overview
 
@@ -181,12 +181,9 @@ RFC 6048 Extended LIST Subcommands:
 - `LIST MOTD`: Message of the day
 - `LIST SUBSCRIPTIONS [wildmat]`: Subscriptions
 
-Standard RFC 3977 Article Transfer Commands:
-- `XOVER message-spec`: Get article overview data
-- `XPAT header message-spec pattern`: Search headers
-- `XHDR header [message-spec]`: Get header from articles
-- `XGTITLE [wildmat]`: Get newsgroup titles
-- `XPATH message-id`: Get article path
+Standard RFC 3977 Article Header/Overview Commands:
+- `HDR field [message-id|range]`: Get specific header field from article(s)
+- `OVER [range]`: Get article overview data
 
 Standard RFC 3977 Post/Feed Commands:
 - `POST`: Begin posting article
@@ -199,6 +196,13 @@ Standard RFC 3977 Authentication Commands:
 - `AUTHINFO USER username`: Authenticate username
 - `AUTHINFO PASS password`: Authenticate password
 - `AUTHINFO SASL mechanism`: Begin SASL authentication
+
+RFC 2980 Common NNTP Extensions:
+- `XOVER message-spec`: Get article overview data (variant of OVER)
+- `XHDR header [message-spec]`: Get header from articles (variant of HDR)
+- `XPAT header message-spec pattern`: Search headers
+- `XGTITLE [wildmat]`: Get newsgroup titles
+- `XPATH message-id`: Get article path
 
 INN-Specific Extensions:
 - `XREPLIC [start-time [end-time [flag]]]`: Replication info
@@ -276,10 +280,12 @@ RFC 3977 Capability Requirements and INN-Specific Extensions:
 | `LIST COUNTS` | `LIST COUNTS` subcommand supported (RFC 6048) |
 | `LIST DISTRIBUTIONS` | `LIST DISTRIBUTIONS` subcommand supported |
 | `LIST OVERVIEW.FMT` | `LIST OVERVIEW.FMT` subcommand supported |
-| `XOVER` | `XOVER` command supported |
-| `XHDR` | `XHDR` command supported |
-| `XPAT` | `XPAT` command supported |
-| `XGTITLE` | `XGTITLE` command supported |
+| `HDR` | `HDR` command supported (RFC 3977) |
+| `OVER` | `OVER` command supported (RFC 3977) |
+| `XOVER` | `XOVER` command supported (RFC 2980 variant) |
+| `XHDR` | `XHDR` command supported (RFC 2980 variant) |
+| `XPAT` | `XPAT` command supported (RFC 2980) |
+| `XGTITLE` | `XGTITLE` command supported (RFC 2980) |
 | | **INN-Specific Extensions** |
 | `XREPLIC` | `XREPLIC` command supported |
 | `XROVER` | `XROVER` command supported |
@@ -289,37 +295,37 @@ RFC 3977 Capability Requirements and INN-Specific Extensions:
 
 ```
 libs/nntp/
-├── include/
-│   └── nntp/
-│       ├── client.h                    (EXISTING - update)
-│       ├── config.hpp                  (NEW)
-│       ├── error.hpp                   (NEW)
-│       ├── parser/
-│       │   ├── response_parser.hpp     (NEW)
-│       │   ├── capability_parser.hpp   (NEW)
-│       │   └── article_parser.hpp      (NEW)
-│       ├── formatter/
-│       │   └── command_formatter.hpp   (NEW)
-│       ├── core/
-│       │   ├── connection.hpp          (NEW)
-│       │   ├── capabilities.hpp        (NEW)
-│       │   ├── command.hpp             (NEW)
-│       │   ├── response.hpp            (NEW)
-│       │   └── article.hpp             (NEW)
-│       └── detail/
-│           ├── parser_state.hpp        (NEW)
-│           ├── buffer_utils.hpp        (NEW)
-│           └── constants.hpp           (NEW)
-├── client.cpp                          (EXISTING - update)
-├── error.cpp                           (NEW)
-├── response_parser.cpp                 (NEW)
-├── capability_parser.cpp               (NEW)
-├── article_parser.cpp                  (NEW)
-├── command_formatter.cpp               (NEW)
-├── connection.cpp                      (NEW)
-├── article.cpp                         (NEW)
-├── buffer_utils.cpp                    (NEW)
-└── CMakeLists.txt                      (EXISTING - update)
++-- include/
+|   +-- nntp/
+|       +-- client.h                    (EXISTING - update)
+|       +-- config.hpp                  (NEW)
+|       +-- error.hpp                   (NEW)
+|       +-- parser/
+|       |   +-- response_parser.hpp     (NEW)
+|       |   +-- capability_parser.hpp   (NEW)
+|       |   +-- article_parser.hpp      (NEW)
+|       +-- formatter/
+|       |   +-- command_formatter.hpp   (NEW)
+|       +-- core/
+|       |   +-- connection.hpp          (NEW)
+|       |   +-- capabilities.hpp        (NEW)
+|       |   +-- command.hpp             (NEW)
+|       |   +-- response.hpp            (NEW)
+|       |   +-- article.hpp             (NEW)
+|       +-- detail/
+|           +-- parser_state.hpp        (NEW)
+|           +-- buffer_utils.hpp        (NEW)
+|           +-- constants.hpp           (NEW)
++-- client.cpp                          (EXISTING - update)
++-- error.cpp                           (NEW)
++-- response_parser.cpp                 (NEW)
++-- capability_parser.cpp               (NEW)
++-- article_parser.cpp                  (NEW)
++-- command_formatter.cpp               (NEW)
++-- connection.cpp                      (NEW)
++-- article.cpp                         (NEW)
++-- buffer_utils.cpp                    (NEW)
++-- CMakeLists.txt                      (EXISTING - update)
 ```
 
 ## Implementation Phases
@@ -535,6 +541,7 @@ libs/nntp/
 - NNTP [RFC 3977](https://datatracker.ietf.org/doc/html/rfc3977) (NNTP Protocol) - See sections 3.1 (Line Format, UTF-8), 5.3 (Capability Requirements), 7 (Commands)
 - NNTP [RFC 4642](https://datatracker.ietf.org/doc/html/rfc4642) (NNTP over TLS)
 - NNTP [RFC 6048](https://datatracker.ietf.org/doc/html/rfc6048) (Additional NNTP Commands)
+- NNTP [RFC 2980](https://datatracker.ietf.org/doc/html/rfc2980) (Common NNTP Extensions)
 - [RFC 5322](https://datatracker.ietf.org/doc/html/rfc5322) (Internet Message Format) - Article header format
 - [RFC 2047](https://datatracker.ietf.org/doc/html/rfc2047) (MIME Encoded-Word Syntax) - Non-ASCII headers
 - [RFC 3629](https://datatracker.ietf.org/doc/html/rfc3629) (UTF-8 Validation) - UTF-8 character validation
