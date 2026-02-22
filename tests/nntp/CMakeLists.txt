@@ -9,6 +9,7 @@ add_executable(test-nntp
     ArticleSpec_test.cpp
     MessageId_test.cpp
     Newsgroup_test.cpp
+    WildcardMatch_test.cpp
     WildcardMatchPattern_test.cpp
 )
 target_link_libraries(test-nntp PUBLIC nntp GTest::gtest_main)

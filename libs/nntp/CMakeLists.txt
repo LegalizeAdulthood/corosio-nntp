@@ -8,6 +8,8 @@ add_library(nntp
     MessageId.cpp
     include/nntp/Newsgroup.h
     Newsgroup.cpp
+    include/nntp/WildcardMatch.h
+    WildcardMatch.cpp
     include/nntp/WildcardMatchPattern.h
     WildcardMatchPattern.cpp
 
