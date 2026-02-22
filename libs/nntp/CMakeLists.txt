@@ -18,8 +18,8 @@ add_library(nntp
     utf8.cpp
 
     # Conversational client API
-    include/nntp/client.h
-    client.cpp
+    include/nntp/Client.h
+    Client.cpp
 )
 
 target_include_directories(nntp PUBLIC include)

@@ -1,4 +1,4 @@
-#include <nntp/client.h>
+#include <nntp/Client.h>
 
 int main()
 {
