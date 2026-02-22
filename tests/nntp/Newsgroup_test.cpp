@@ -8,16 +8,25 @@
 using namespace nntp;
 using namespace testing;
 
-class ConstructValid : public TestWithParam<std::string_view>
+namespace
+{
+
+class GroupConstructValid : public TestWithParam<std::string_view>
 {
 };
 
-TEST_P(ConstructValid, newsgroup)
+class GroupConstructInvalid : public TestWithParam<std::string_view>
+{
+};
+
+} // namespace
+
+TEST_P(GroupConstructValid, newsgroup)
 {
     EXPECT_NO_THROW(Newsgroup{GetParam()});
 }
 
-INSTANTIATE_TEST_SUITE_P(TestNewsgroupWithParam, ConstructValid,
+INSTANTIATE_TEST_SUITE_P(TestNewsgroupWithParam, GroupConstructValid,
     Values("comp.lang.c",     //
         "a",                  //
         "comp.lang.c++",      //
@@ -40,11 +49,7 @@ TEST(TestNewsgroupConstruct, allowedAsciiCharacters)
     }
 }
 
-class ConstructInvalid : public TestWithParam<std::string_view>
-{
-};
-
-TEST_P(ConstructInvalid, newsgroup)
+TEST_P(GroupConstructInvalid, newsgroup)
 {
     const std::string_view value = GetParam();
 
@@ -73,7 +78,7 @@ static std::string_view s_invalid_newsgroups[]{
     {"comp\x00lang", 9} // embedded NUL
 };
 
-INSTANTIATE_TEST_SUITE_P(TestNewsgroupInvalidWithParam, ConstructInvalid, ValuesIn(s_invalid_newsgroups));
+INSTANTIATE_TEST_SUITE_P(TestNewsgroupInvalidWithParam, GroupConstructInvalid, ValuesIn(s_invalid_newsgroups));
 
 TEST(TestNewsgroupValue, returnsCorrectValue)
 {

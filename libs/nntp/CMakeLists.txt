@@ -8,6 +8,8 @@ add_library(nntp
     MessageId.cpp
     include/nntp/Newsgroup.h
     Newsgroup.cpp
+    include/nntp/WildcardMatchPattern.h
+    WildcardMatchPattern.cpp
 
     # Conversational client API
     include/nntp/client.h
