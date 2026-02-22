@@ -11,6 +11,10 @@ add_library(nntp
     include/nntp/WildcardMatchPattern.h
     WildcardMatchPattern.cpp
 
+    # UTF-8 utilities
+    utf8.h
+    utf8.cpp
+
     # Conversational client API
     include/nntp/client.h
     client.cpp
