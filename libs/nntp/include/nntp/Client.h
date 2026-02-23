@@ -14,11 +14,13 @@
 namespace nntp
 {
 
+template <typename T>
+using Task = boost::capy::task<T>;
+
 class Client
 {
 public:
-    template <typename T>
-    using Task = boost::capy::task<T>;
+    static Task<Client> connect(boost::capy::any_stream &stream);
 
     Client() = default;
     explicit Client(boost::capy::any_stream &stream);
